@@ -9,10 +9,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,6 +56,16 @@ public class SalesItemController {
         service.updateItem(id, salesItemDto);
         Map<String, String> responseBody = new HashMap<>();
         responseBody.put("message", "물품이 수정되었습니다.");
+
+        return ResponseEntity.ok(responseBody);
+    }
+
+    //물품 이미지 등록
+    @PutMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Map<String, String>> updateImage(@PathVariable("id") Long id, @RequestParam("image") MultipartFile image, @RequestParam("password") String password) {
+        service.updateImage(id, image, password);
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("message", "이미지가 등록되었습니다.");
 
         return ResponseEntity.ok(responseBody);
     }

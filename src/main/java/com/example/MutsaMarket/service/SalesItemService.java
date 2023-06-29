@@ -12,8 +12,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Optional;
 
 @Service
@@ -65,6 +69,40 @@ public class SalesItemService {
                 return SalesItemDto.fromEntity(item);
             } else
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        } else
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+    }
+
+    //물품 이미지 등록
+    public ItemListDto updateImage(Long id, MultipartFile image, String password) {
+        Optional<SalesItemEntity> optionalSalesItem = repository.findById(id);
+        if (optionalSalesItem.isEmpty())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+
+        SalesItemEntity item = optionalSalesItem.get();
+        if (item.getPassword().equals(password)) {
+            String profileDir = String.format("media/%d/", id);
+            try {
+                Files.createDirectories(Path.of(profileDir));
+            } catch (IOException e) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+            String originalFilename = image.getOriginalFilename();
+            String[] fileNameSplit = originalFilename.split("\\."); //정규표현식을 기준으로 split
+            String extension = fileNameSplit[fileNameSplit.length-1]; //split 제일 마지막이 확장자
+            String profileFilename = "image." + extension;
+
+            String profilePath = profileDir + profileFilename;
+
+            try {
+                image.transferTo(Path.of(profilePath));
+            } catch (IOException e) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            SalesItemEntity salesItem = optionalSalesItem.get();
+            salesItem.setImageUrl(String.format("/static/%d/%s", id, profileFilename));
+            return ItemListDto.fromEntity(repository.save(salesItem));
         } else
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
