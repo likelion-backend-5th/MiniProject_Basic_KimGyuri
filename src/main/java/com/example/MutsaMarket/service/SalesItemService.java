@@ -49,4 +49,23 @@ public class SalesItemService {
         else
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
+
+    //물품 정보 수정
+    public SalesItemDto updateItem(Long id, SalesItemDto dto) {
+        Optional<SalesItemEntity> optionalItem = repository.findById(id);
+        if (optionalItem.isPresent()) {
+            SalesItemEntity item = optionalItem.get();
+            if (item.getId().equals(id) && item.getPassword().equals(dto.getPassword())) {
+                item.setTitle(dto.getTitle());
+                item.setDescription(dto.getDescription());
+                item.setMinPriceWanted(dto.getMinPriceWanted());
+                item.setWriter(dto.getWriter());
+                item.setPassword(dto.getPassword());
+                repository.save(item);
+                return SalesItemDto.fromEntity(item);
+            } else
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        } else
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+    }
 }

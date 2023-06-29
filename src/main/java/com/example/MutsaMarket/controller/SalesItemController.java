@@ -47,6 +47,17 @@ public class SalesItemController {
         return service.readItem(id);
     }
 
+    //물품 정보 수정
+    @PutMapping("/{id}")
+    public ResponseEntity<Map<String, String>> update(@PathVariable("id") Long id, @RequestBody SalesItemDto salesItemDto) {
+        log.info(salesItemDto.toString());
+        service.updateItem(id, salesItemDto);
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("message", "물품이 수정되었습니다.");
+
+        return ResponseEntity.ok(responseBody);
+    }
+
     //유효성 검증 결과 오류
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
