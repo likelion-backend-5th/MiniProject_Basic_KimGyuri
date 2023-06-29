@@ -70,6 +70,16 @@ public class SalesItemController {
         return ResponseEntity.ok(responseBody);
     }
 
+    //물품 정보 삭제
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, String>> delete(@PathVariable("id") Long id, @RequestBody SalesItemDto dto) {
+        service.deleteItem(id, dto);
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("message", "물품을 삭제했습니다.");
+
+        return ResponseEntity.ok(responseBody);
+    }
+
     //유효성 검증 결과 오류
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

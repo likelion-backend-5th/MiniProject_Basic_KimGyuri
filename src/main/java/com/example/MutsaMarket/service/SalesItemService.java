@@ -106,4 +106,17 @@ public class SalesItemService {
         } else
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
+
+    //물품 정보 삭제
+    public void deleteItem(Long id, SalesItemDto dto) {
+        Optional<SalesItemEntity> optionalSalesItem = repository.findById(id);
+        if (optionalSalesItem.isEmpty())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+
+        SalesItemEntity item = optionalSalesItem.get();
+        if (item.getPassword().equals(dto.getPassword())) {
+            repository.deleteById(id);
+        } else
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+    }
 }
