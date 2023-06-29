@@ -1,10 +1,12 @@
 package com.example.MutsaMarket.controller;
 
+import com.example.MutsaMarket.dto.ItemListDto;
 import com.example.MutsaMarket.dto.SalesItemDto;
 import com.example.MutsaMarket.service.SalesItemService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -30,6 +32,12 @@ public class SalesItemController {
         responseBody.put("message", "등록이 완료되었습니다.");
 
         return ResponseEntity.ok(responseBody);
+    }
+
+    //물품 전체 조회
+    @GetMapping
+    public Page<ItemListDto> readAll(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam(value = "limit", defaultValue = "20") Integer limit) {
+        return service.readItemAll(page, limit);
     }
 
     //유효성 검증 결과 오류
