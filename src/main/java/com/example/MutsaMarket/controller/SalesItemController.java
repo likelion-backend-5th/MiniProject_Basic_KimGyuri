@@ -1,5 +1,6 @@
 package com.example.MutsaMarket.controller;
 
+import com.example.MutsaMarket.dto.ItemDto;
 import com.example.MutsaMarket.dto.ItemListDto;
 import com.example.MutsaMarket.dto.SalesItemDto;
 import com.example.MutsaMarket.service.SalesItemService;
@@ -38,6 +39,12 @@ public class SalesItemController {
     @GetMapping
     public Page<ItemListDto> readAll(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam(value = "limit", defaultValue = "20") Integer limit) {
         return service.readItemAll(page, limit);
+    }
+
+    //물품 단일 조회
+    @GetMapping("/{id}")
+    public ItemDto read(@PathVariable("id") Long id) {
+        return service.readItem(id);
     }
 
     //유효성 검증 결과 오류
