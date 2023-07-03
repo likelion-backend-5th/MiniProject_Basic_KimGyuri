@@ -3,6 +3,7 @@ package com.example.MutsaMarket.controller;
 import com.example.MutsaMarket.dto.CommentDto;
 import com.example.MutsaMarket.dto.CommentListDto;
 import com.example.MutsaMarket.service.CommentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -21,7 +22,7 @@ public class CommentController {
 
     //댓글 작성
     @PostMapping
-    public ResponseEntity<Map<String, String>> create(@PathVariable("itemId") Long itemId, @RequestBody CommentDto dto) {
+    public ResponseEntity<Map<String, String>> create(@PathVariable("itemId") Long itemId, @Valid @RequestBody CommentDto dto) {
         log.info(dto.toString());
         service.createComment(itemId, dto);
         Map<String, String> responseBody = new HashMap<>();
