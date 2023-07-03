@@ -2,6 +2,7 @@ package com.example.MutsaMarket.controller;
 
 import com.example.MutsaMarket.dto.CommentDto;
 import com.example.MutsaMarket.dto.CommentListDto;
+import com.example.MutsaMarket.dto.ReplyDto;
 import com.example.MutsaMarket.service.CommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -55,6 +56,17 @@ public class CommentController {
         service.deleteComment(commentId, itemId, dto);
         Map<String, String> responseBody = new HashMap<>();
         responseBody.put("message", "댓글을 삭제했습니다.");
+
+        return ResponseEntity.ok(responseBody);
+    }
+
+    //답글 작성
+    @PutMapping("/{commentId}/reply")
+    public ResponseEntity<Map<String, String>> reply(@PathVariable("commentId") Long commentId, @PathVariable("itemId") Long itemId, @RequestBody ReplyDto dto) {
+        log.info(dto.toString());
+        service.replyComment(itemId, commentId, dto);
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("message", "댓글에 답변이 추가되었습니다.");
 
         return ResponseEntity.ok(responseBody);
     }

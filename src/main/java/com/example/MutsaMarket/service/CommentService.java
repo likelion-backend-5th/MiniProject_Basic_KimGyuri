@@ -2,7 +2,9 @@ package com.example.MutsaMarket.service;
 
 import com.example.MutsaMarket.dto.CommentDto;
 import com.example.MutsaMarket.dto.CommentListDto;
+import com.example.MutsaMarket.dto.ReplyDto;
 import com.example.MutsaMarket.entity.CommentEntity;
+import com.example.MutsaMarket.entity.SalesItemEntity;
 import com.example.MutsaMarket.repository.CommentRepository;
 import com.example.MutsaMarket.repository.SalesItemRepository;
 import lombok.RequiredArgsConstructor;
@@ -76,6 +78,26 @@ public class CommentService {
             commentRepository.deleteById(commentId);
         else
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+    }
+
+    //답글 작성
+    public ReplyDto replyComment(Long itemId, Long commentId, ReplyDto dto) {
+        Optional<SalesItemEntity> optionalSalesItem = salesItemRepository.findById(itemId);
+        Optional<CommentEntity> optionalComment = commentRepository.findById(commentId);
+        if (optionalSalesItem.isEmpty() || optionalComment.isEmpty())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+
+        SalesItemEntity item = optionalSalesItem.get();
+        CommentEntity comment = optionalComment.get();
+        if (!itemId.equals(comment.getItemId()))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        if (item.getWriter().equals(dto.getWriter()) && item.getPassword().equals(dto.getPassword())) {
+            comment.setReply(dto.getReply());
+            commentRepository.save(comment);
+            return ReplyDto.fromEntity(comment);
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
     }
 }
 
