@@ -61,5 +61,21 @@ public class CommentService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
     }
+
+    //게시글 댓글 삭제
+    public void deleteComment(Long commentId, Long itemId, CommentDto dto) {
+        Optional<CommentEntity> optionalComment = commentRepository.findById(commentId);
+        if (optionalComment.isEmpty())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+
+        CommentEntity comment = optionalComment.get();
+        if(!itemId.equals(comment.getItemId()))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+
+        if(comment.getPassword().equals(dto.getPassword()))
+            commentRepository.deleteById(commentId);
+        else
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+    }
 }
 

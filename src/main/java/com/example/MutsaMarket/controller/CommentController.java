@@ -46,4 +46,15 @@ public class CommentController {
 
         return ResponseEntity.ok(responseBody);
     }
+
+    //게시글 댓글 삭제
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<Map<String, String>> delete(@PathVariable("commentId") Long commentId, @PathVariable("itemId") Long itemId, @RequestBody CommentDto dto) {
+        log.info(dto.toString());
+        service.deleteComment(commentId, itemId, dto);
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("message", "댓글을 삭제했습니다.");
+
+        return ResponseEntity.ok(responseBody);
+    }
 }
