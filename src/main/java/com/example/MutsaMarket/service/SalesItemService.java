@@ -63,8 +63,6 @@ public class SalesItemService {
                 item.setTitle(dto.getTitle());
                 item.setDescription(dto.getDescription());
                 item.setMinPriceWanted(dto.getMinPriceWanted());
-                item.setWriter(dto.getWriter());
-                item.setPassword(dto.getPassword());
                 repository.save(item);
                 return SalesItemDto.fromEntity(item);
             } else
