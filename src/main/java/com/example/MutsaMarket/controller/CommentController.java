@@ -35,4 +35,15 @@ public class CommentController {
     public Page<CommentListDto> readAll(@PathVariable("itemId") Long itemId) {
         return service.readCommentAll(itemId);
     }
+
+    //게시글 댓글 수정
+    @PutMapping("/{commentId}")
+    public ResponseEntity<Map<String, String>> update(@PathVariable("commentId") Long commentId, @PathVariable("itemId") Long itemId, @RequestBody CommentDto dto) {
+        log.info(dto.toString());
+        service.updateComment(itemId, commentId, dto);
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("message", "댓글이 수정되었습니다.");
+
+        return ResponseEntity.ok(responseBody);
+    }
 }

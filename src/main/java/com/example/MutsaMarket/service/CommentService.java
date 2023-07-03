@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class CommentService {
@@ -40,6 +42,24 @@ public class CommentService {
         Page<CommentEntity> commentEntityPage = commentRepository.findAll(pageable);
         Page<CommentListDto> commentListDtoPage = commentEntityPage.map(CommentListDto::fromEntity);
         return commentListDtoPage;
+    }
+
+    //게시글 댓글 수정
+    public CommentDto updateComment(Long itemId, Long commentId, CommentDto dto) {
+        Optional<CommentEntity> optionalComment = commentRepository.findById(commentId);
+        if (optionalComment.isEmpty())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+
+        CommentEntity comment = optionalComment.get();
+        if (!itemId.equals(comment.getItemId()))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        if (comment.getWriter().equals(dto.getWriter()) && comment.getPassword().equals(dto.getPassword())) {
+            comment.setContent(dto.getContent());
+            commentRepository.save(comment);
+            return CommentDto.fromEntity(comment);
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
     }
 }
 
