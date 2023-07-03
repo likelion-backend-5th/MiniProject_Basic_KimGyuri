@@ -62,8 +62,8 @@ public class SalesItemController {
 
     //물품 이미지 등록
     @PutMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Map<String, String>> updateImage(@PathVariable("id") Long id, @RequestParam("image") MultipartFile image, @RequestParam("password") String password) {
-        service.updateImage(id, image, password);
+    public ResponseEntity<Map<String, String>> updateImage(@PathVariable("id") Long id, @RequestParam("image") MultipartFile image, @RequestParam("writer") String writer, @RequestParam("password") String password) {
+        service.updateImage(id, image, writer, password);
         Map<String, String> responseBody = new HashMap<>();
         responseBody.put("message", "이미지가 등록되었습니다.");
 

@@ -59,7 +59,7 @@ public class SalesItemService {
         Optional<SalesItemEntity> optionalItem = repository.findById(id);
         if (optionalItem.isPresent()) {
             SalesItemEntity item = optionalItem.get();
-            if (item.getId().equals(id) && item.getPassword().equals(dto.getPassword())) {
+            if (item.getWriter().equals(dto.getWriter()) && item.getPassword().equals(dto.getPassword())) {
                 item.setTitle(dto.getTitle());
                 item.setDescription(dto.getDescription());
                 item.setMinPriceWanted(dto.getMinPriceWanted());
@@ -72,13 +72,13 @@ public class SalesItemService {
     }
 
     //물품 이미지 등록
-    public ItemListDto updateImage(Long id, MultipartFile image, String password) {
+    public ItemListDto updateImage(Long id, MultipartFile image, String writer, String password) {
         Optional<SalesItemEntity> optionalSalesItem = repository.findById(id);
         if (optionalSalesItem.isEmpty())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 
         SalesItemEntity item = optionalSalesItem.get();
-        if (item.getPassword().equals(password)) {
+        if (item.getWriter().equals(writer) && item.getPassword().equals(password)) {
             String profileDir = String.format("media/%d/", id);
             try {
                 Files.createDirectories(Path.of(profileDir));
@@ -112,7 +112,7 @@ public class SalesItemService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 
         SalesItemEntity item = optionalSalesItem.get();
-        if (item.getPassword().equals(dto.getPassword())) {
+        if (item.getWriter().equals(dto.getWriter()) && item.getPassword().equals(dto.getPassword())) {
             repository.deleteById(id);
         } else
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
