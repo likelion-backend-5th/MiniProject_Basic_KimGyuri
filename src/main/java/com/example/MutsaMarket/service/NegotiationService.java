@@ -5,6 +5,10 @@ import com.example.MutsaMarket.dto.ProposalListDto;
 import com.example.MutsaMarket.dto.UpdateProposalDto;
 import com.example.MutsaMarket.entity.NegotiationEntity;
 import com.example.MutsaMarket.entity.SalesItemEntity;
+import com.example.MutsaMarket.exceptions.AuthorizationException;
+import com.example.MutsaMarket.exceptions.CheckStatusException;
+import com.example.MutsaMarket.exceptions.ItemNotFoundException;
+import com.example.MutsaMarket.exceptions.NegotiationNotFoundException;
 import com.example.MutsaMarket.repository.NegotiationRepository;
 import com.example.MutsaMarket.repository.SalesItemRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +34,7 @@ public class NegotiationService {
         //itemId 없을 때 구매 제안 등록 방지
         Optional<SalesItemEntity> optionalSalesItem = salesItemRepository.findById(itemId);
         if(optionalSalesItem.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ItemNotFoundException();
         }
 
         NegotiationEntity newProposal = new NegotiationEntity();
@@ -50,7 +54,7 @@ public class NegotiationService {
 
         //대상 물품이 없을 때
         if (optionalSalesItem.isEmpty())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ItemNotFoundException();
 
         //물품 등록자의 경우
         SalesItemEntity item = optionalSalesItem.get();
@@ -67,7 +71,7 @@ public class NegotiationService {
             return proposalEntityPage.map(ProposalListDto::fromEntity);
         }
         else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new AuthorizationException();
         }
     }
 
@@ -75,11 +79,11 @@ public class NegotiationService {
     public String updateProposal(Long itemId, Long proposalId, UpdateProposalDto dto) {
         Optional<NegotiationEntity> optionalProposal = negotiationRepository.findById(proposalId);
         if (optionalProposal.isEmpty())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new NegotiationNotFoundException();
 
         Optional<SalesItemEntity> optionalSalesItem = salesItemRepository.findById(itemId);
         if (optionalSalesItem.isEmpty())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ItemNotFoundException();
 
         NegotiationEntity proposal = optionalProposal.get();
         SalesItemEntity item = optionalSalesItem.get();
@@ -107,7 +111,7 @@ public class NegotiationService {
                 negotiationRepository.save(proposal);
                 return "edit";
             } else {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+                throw new CheckStatusException();
             }
         }
 
@@ -119,7 +123,7 @@ public class NegotiationService {
         }
 
         else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new AuthorizationException();
         }
     }
 
@@ -127,15 +131,15 @@ public class NegotiationService {
     public void deleteProposal(Long itemId, Long proposalId, UpdateProposalDto dto) {
         Optional<NegotiationEntity> optionalProposal = negotiationRepository.findById(proposalId);
         if (optionalProposal.isEmpty())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new NegotiationNotFoundException();
 
         NegotiationEntity proposal = optionalProposal.get();
         if(proposal.getItemId().equals(itemId) || proposal.getId().equals(proposalId))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ItemNotFoundException();
 
         if(proposal.getWriter().equals(dto.getWriter()) && proposal.getPassword().equals(dto.getPassword()))
             negotiationRepository.deleteById(proposalId);
         else
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new AuthorizationException();
     }
 }
