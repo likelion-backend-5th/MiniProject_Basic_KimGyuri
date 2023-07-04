@@ -15,13 +15,13 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/items/{itemId}")
+@RequestMapping("/items/{itemId}/proposals")
 @RequiredArgsConstructor
 public class NegotiationController {
     private final NegotiationService service;
 
     //구매 제안 등록
-    @PostMapping("/proposal")
+    @PostMapping
     public ResponseEntity<Map<String, String>> create(@RequestBody ProposalDto dto, @PathVariable("itemId") Long itemId) {
         log.info(dto.toString());
         service.createProposal(itemId, dto);
