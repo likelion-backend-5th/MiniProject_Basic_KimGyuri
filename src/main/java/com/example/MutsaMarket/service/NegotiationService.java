@@ -2,6 +2,7 @@ package com.example.MutsaMarket.service;
 
 import com.example.MutsaMarket.dto.ProposalDto;
 import com.example.MutsaMarket.dto.ProposalListDto;
+import com.example.MutsaMarket.dto.UpdateProposalDto;
 import com.example.MutsaMarket.entity.NegotiationEntity;
 import com.example.MutsaMarket.entity.SalesItemEntity;
 import com.example.MutsaMarket.repository.NegotiationRepository;
@@ -59,6 +60,26 @@ public class NegotiationService {
             Page<NegotiationEntity> proposalEntityPage = negotiationRepository.findAllByItemIdAndWriterAndPassword(itemId, writer, password, pageable);
             return proposalEntityPage.map(ProposalListDto::fromEntity);
         }
+        else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    //구매 제안 수정
+    public boolean updateProposal(Long itemId, Long proposalId, UpdateProposalDto dto) {
+        Optional<NegotiationEntity> optionalProposal = negotiationRepository.findById(proposalId);
+        if (optionalProposal.isEmpty())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+
+        NegotiationEntity proposal = optionalProposal.get();
+
+        //구매 제안자
+        if(proposal.getItemId() == itemId && proposal.getWriter().equals(dto.getWriter()) && proposal.getPassword().equals(dto.getPassword())) {
+            proposal.setSuggestedPrice(dto.getSuggestedPrice());
+            negotiationRepository.save(proposal);
+            return true;
+        }
+
         else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }

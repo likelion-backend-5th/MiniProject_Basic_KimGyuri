@@ -2,6 +2,7 @@ package com.example.MutsaMarket.controller;
 
 import com.example.MutsaMarket.dto.ProposalDto;
 import com.example.MutsaMarket.dto.ProposalListDto;
+import com.example.MutsaMarket.dto.UpdateProposalDto;
 import com.example.MutsaMarket.service.NegotiationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,5 +35,18 @@ public class NegotiationController {
     @GetMapping
     public Page<ProposalListDto> readAll(@PathVariable("itemId") Long itemId, @RequestParam("writer") String writer, @RequestParam("password") String password, @RequestParam(value = "page", defaultValue = "0") Integer page) {
         return service.readProposalAll(itemId, writer, password, page);
+    }
+
+    //구매 제안 수정
+    @PutMapping("/{proposalId}")
+    public ResponseEntity<Map<String, String>> update(@PathVariable("itemId") Long itemId, @PathVariable("proposalId") Long proposalId, @RequestBody UpdateProposalDto dto) {
+        log.info(dto.toString());
+        boolean result = service.updateProposal(itemId, proposalId, dto);
+        Map<String, String> responseBody = new HashMap<>();
+
+        if (result == true)
+            responseBody.put("message", "제안이 수정되었습니다.");
+
+        return ResponseEntity.ok(responseBody);
     }
 }
