@@ -2,6 +2,7 @@ package com.example.MutsaMarket.dto;
 
 import com.example.MutsaMarket.entity.NegotiationEntity;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -12,7 +13,7 @@ public class ProposalDto {
     @NotBlank(message = "비밀번호를 입력해주세요.")
     private String password;
 
-    @NotBlank(message = "제안 가격을 입력해주세요.")
+    @NotNull(message = "제안 가격을 입력해주세요.")
     private Long suggestedPrice;
 
     public static ProposalDto fromEntity(NegotiationEntity entity) {
