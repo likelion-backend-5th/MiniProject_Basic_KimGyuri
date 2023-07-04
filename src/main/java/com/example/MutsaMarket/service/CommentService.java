@@ -43,6 +43,9 @@ public class CommentService {
 
     //게시글 댓글 조회
     public Page<CommentListDto> readCommentAll(Long itemId) {
+        if (!salesItemRepository.existsById(itemId))
+            throw new ItemNotFoundException();
+
         Pageable pageable = PageRequest.of(0, 25, Sort.by("id"));
         Page<CommentEntity> commentEntityPage = commentRepository.findAll(pageable);
         Page<CommentListDto> commentListDtoPage = commentEntityPage.map(CommentListDto::fromEntity);
