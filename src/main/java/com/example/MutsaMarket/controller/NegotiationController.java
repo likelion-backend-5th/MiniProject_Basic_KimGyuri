@@ -41,13 +41,15 @@ public class NegotiationController {
     @PutMapping("/{proposalId}")
     public ResponseEntity<Map<String, String>> update(@PathVariable("itemId") Long itemId, @PathVariable("proposalId") Long proposalId, @RequestBody UpdateProposalDto dto) {
         log.info(dto.toString());
-        boolean result = service.updateProposal(itemId, proposalId, dto);
+        String result = service.updateProposal(itemId, proposalId, dto);
         Map<String, String> responseBody = new HashMap<>();
 
-        if (result == true)
+        if (result.equals("edit"))
             responseBody.put("message", "제안이 수정되었습니다.");
-        if (result == false)
+        if (result.equals("modify"))
             responseBody.put("message", "제안의 상태가 변경되었습니다.");
+        if (result.equals("confirm"))
+            responseBody.put("message", "구매가 확정되었습니다.");
 
         return ResponseEntity.ok(responseBody);
     }

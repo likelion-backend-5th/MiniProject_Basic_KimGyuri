@@ -65,8 +65,8 @@ public class NegotiationService {
         }
     }
 
-    //구매 제안 수정
-    public boolean updateProposal(Long itemId, Long proposalId, UpdateProposalDto dto) {
+    //구매 제안 수정 / 수락/거절 / 확정
+    public String updateProposal(Long itemId, Long proposalId, UpdateProposalDto dto) {
         Optional<NegotiationEntity> optionalProposal = negotiationRepository.findById(proposalId);
         if (optionalProposal.isEmpty())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
@@ -78,18 +78,38 @@ public class NegotiationService {
         NegotiationEntity proposal = optionalProposal.get();
         SalesItemEntity item = optionalSalesItem.get();
 
-        //구매 제안자
+        //구매 제안자 (제안 수정 / 제안 확정)
         if(proposal.getItemId().equals(itemId) && proposal.getWriter().equals(dto.getWriter()) && proposal.getPassword().equals(dto.getPassword())) {
-            proposal.setSuggestedPrice(dto.getSuggestedPrice());
-            negotiationRepository.save(proposal);
-            return true;
+
+            if(proposal.getStatus().equals("수락")) {
+                proposal.setStatus(dto.getStatus());
+                negotiationRepository.save(proposal); //제안 확정
+
+                item.setStatus("판매 완료");
+                salesItemRepository.save(item); //해당 물품 판매 완료
+
+                List<NegotiationEntity> proposals = negotiationRepository.findAllByItemId(itemId);
+                for (NegotiationEntity negotiation : proposals) {
+                    if (!negotiation.getStatus().equals("확정")) {
+                        negotiation.setStatus("거절");
+                        negotiationRepository.save(negotiation);
+                    }
+                }
+                return "confirm";
+            } else if (proposal.getStatus().equals("제안") && dto.getStatus().isEmpty()){
+                proposal.setSuggestedPrice(dto.getSuggestedPrice());
+                negotiationRepository.save(proposal);
+                return "edit";
+            } else {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            }
         }
 
-        //물품 등록자
+        //물품 등록자 (제안 수락/거절)
         else if(proposal.getItemId().equals(itemId) && item.getWriter().equals(dto.getWriter()) && item.getPassword().equals(dto.getPassword())) {
             proposal.setStatus(dto.getStatus());
             negotiationRepository.save(proposal);
-            return false;
+            return "modify";
         }
 
         else {
