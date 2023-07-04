@@ -30,7 +30,7 @@ public class CommentService {
     //댓글 작성
     public CommentDto createComment(Long itemId, CommentDto dto) {
         if (!salesItemRepository.existsById(itemId))
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            throw new ItemNotFoundException();
 
         CommentEntity newComment = new CommentEntity();
         newComment.setWriter(dto.getWriter());
@@ -53,17 +53,17 @@ public class CommentService {
     public CommentDto updateComment(Long itemId, Long commentId, CommentDto dto) {
         Optional<CommentEntity> optionalComment = commentRepository.findById(commentId);
         if (optionalComment.isEmpty())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new CommentNotFoundException();
 
         CommentEntity comment = optionalComment.get();
         if (!itemId.equals(comment.getItemId()))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ItemNotFoundException();
         if (comment.getWriter().equals(dto.getWriter()) && comment.getPassword().equals(dto.getPassword())) {
             comment.setContent(dto.getContent());
             commentRepository.save(comment);
             return CommentDto.fromEntity(comment);
         } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new AuthorizationException();
         }
     }
 
