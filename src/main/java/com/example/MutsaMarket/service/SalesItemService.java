@@ -4,6 +4,9 @@ import com.example.MutsaMarket.dto.ItemDto;
 import com.example.MutsaMarket.dto.ItemListDto;
 import com.example.MutsaMarket.dto.SalesItemDto;
 import com.example.MutsaMarket.entity.SalesItemEntity;
+import com.example.MutsaMarket.exceptions.AuthorizationException;
+import com.example.MutsaMarket.exceptions.ImageUploadException;
+import com.example.MutsaMarket.exceptions.ItemNotFoundException;
 import com.example.MutsaMarket.repository.SalesItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -51,7 +54,7 @@ public class SalesItemService {
         if (optionalItem.isPresent())
             return ItemDto.fromEntity(optionalItem.get());
         else
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ItemNotFoundException();
     }
 
     //물품 정보 수정
@@ -66,16 +69,16 @@ public class SalesItemService {
                 repository.save(item);
                 return SalesItemDto.fromEntity(item);
             } else
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+                throw new AuthorizationException();
         } else
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ItemNotFoundException();
     }
 
     //물품 이미지 등록
     public ItemListDto updateImage(Long id, MultipartFile image, String writer, String password) {
         Optional<SalesItemEntity> optionalSalesItem = repository.findById(id);
         if (optionalSalesItem.isEmpty())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ItemNotFoundException();
 
         SalesItemEntity item = optionalSalesItem.get();
         if (item.getWriter().equals(writer) && item.getPassword().equals(password)) {
@@ -83,7 +86,7 @@ public class SalesItemService {
             try {
                 Files.createDirectories(Path.of(profileDir));
             } catch (IOException e) {
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new ImageUploadException();
             }
 
             String originalFilename = image.getOriginalFilename();
@@ -96,25 +99,25 @@ public class SalesItemService {
             try {
                 image.transferTo(Path.of(profilePath));
             } catch (IOException e) {
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new ImageUploadException();
             }
             SalesItemEntity salesItem = optionalSalesItem.get();
             salesItem.setImageUrl(String.format("/static/%d/%s", id, profileFilename));
             return ItemListDto.fromEntity(repository.save(salesItem));
         } else
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new AuthorizationException();
     }
 
     //물품 정보 삭제
     public void deleteItem(Long id, SalesItemDto dto) {
         Optional<SalesItemEntity> optionalSalesItem = repository.findById(id);
         if (optionalSalesItem.isEmpty())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ItemNotFoundException();
 
         SalesItemEntity item = optionalSalesItem.get();
         if (item.getWriter().equals(dto.getWriter()) && item.getPassword().equals(dto.getPassword())) {
             repository.deleteById(id);
         } else
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new AuthorizationException();
     }
 }
