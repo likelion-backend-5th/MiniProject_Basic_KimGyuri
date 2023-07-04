@@ -51,4 +51,15 @@ public class NegotiationController {
 
         return ResponseEntity.ok(responseBody);
     }
+
+    //구매 제안 삭제
+    @DeleteMapping("{proposalId}")
+    public ResponseEntity<Map<String, String>> delete(@PathVariable("itemId") Long itemId, @PathVariable("proposalId") Long proposalId, @RequestBody UpdateProposalDto dto) {
+        log.info(dto.toString());
+        service.deleteProposal(itemId, proposalId, dto);
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("message", "제안을 삭제했습니다.");
+
+        return ResponseEntity.ok(responseBody);
+    }
 }

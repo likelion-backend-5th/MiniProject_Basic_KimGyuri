@@ -96,4 +96,20 @@ public class NegotiationService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
     }
+
+    //구매 제안 삭제
+    public void deleteProposal(Long itemId, Long proposalId, UpdateProposalDto dto) {
+        Optional<NegotiationEntity> optionalProposal = negotiationRepository.findById(proposalId);
+        if (optionalProposal.isEmpty())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+
+        NegotiationEntity proposal = optionalProposal.get();
+        if(proposal.getItemId().equals(itemId) || proposal.getItemId().equals(proposalId))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+
+        if(proposal.getWriter().equals(dto.getWriter()) && proposal.getPassword().equals(dto.getPassword()))
+            negotiationRepository.deleteById(proposalId);
+        else
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+    }
 }
