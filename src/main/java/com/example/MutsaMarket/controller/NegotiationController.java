@@ -4,10 +4,14 @@ import com.example.MutsaMarket.dto.ProposalDto;
 import com.example.MutsaMarket.dto.ProposalListDto;
 import com.example.MutsaMarket.dto.UpdateProposalDto;
 import com.example.MutsaMarket.service.NegotiationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -22,7 +26,7 @@ public class NegotiationController {
 
     //구매 제안 등록
     @PostMapping
-    public ResponseEntity<Map<String, String>> create(@RequestBody ProposalDto dto, @PathVariable("itemId") Long itemId) {
+    public ResponseEntity<Map<String, String>> create(@Valid @RequestBody ProposalDto dto, @PathVariable("itemId") Long itemId) {
         log.info(dto.toString());
         service.createProposal(itemId, dto);
         Map<String, String> responseBody = new HashMap<>();
@@ -63,5 +67,18 @@ public class NegotiationController {
         responseBody.put("message", "제안을 삭제했습니다.");
 
         return ResponseEntity.ok(responseBody);
+    }
+
+    //유효성 검증 결과 오류
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleValidationException(
+            MethodArgumentNotValidException exception
+    ) {
+        Map<String, String> errors = new HashMap<>();
+        for (FieldError error: exception.getBindingResult().getFieldErrors()) {
+            errors.put(error.getField(), error.getDefaultMessage());
+        }
+        return errors;
     }
 }
