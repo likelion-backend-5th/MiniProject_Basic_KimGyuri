@@ -56,6 +56,10 @@ public class NegotiationService {
         if (optionalSalesItem.isEmpty())
             throw new ItemNotFoundException();
 
+        //대상 제안이 없을 때
+        if (optionalNegotiation.isEmpty())
+            throw new NegotiationNotFoundException();
+
         //물품 등록자의 경우
         SalesItemEntity item = optionalSalesItem.get();
         if(item.getWriter().equals(writer) && item.getPassword().equals(password)) {
