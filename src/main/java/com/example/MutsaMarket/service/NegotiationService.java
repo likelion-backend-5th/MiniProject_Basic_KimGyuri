@@ -27,6 +27,12 @@ public class NegotiationService {
 
     //구매 제안 등록
     public ProposalDto createProposal(Long itemId, ProposalDto dto) {
+        //itemId 없을 때 구매 제안 등록 방지
+        Optional<SalesItemEntity> optionalSalesItem = salesItemRepository.findById(itemId);
+        if(optionalSalesItem.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
         NegotiationEntity newProposal = new NegotiationEntity();
         newProposal.setWriter(dto.getWriter());
         newProposal.setPassword(dto.getPassword());
