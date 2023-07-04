@@ -74,7 +74,7 @@ public class CommentService {
         if(!itemId.equals(comment.getItemId()))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 
-        if(comment.getPassword().equals(dto.getPassword()))
+        if(comment.getWriter().equals(dto.getWriter()) && comment.getPassword().equals(dto.getPassword()))
             commentRepository.deleteById(commentId);
         else
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
