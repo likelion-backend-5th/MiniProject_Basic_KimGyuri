@@ -130,7 +130,7 @@ public class NegotiationService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 
         NegotiationEntity proposal = optionalProposal.get();
-        if(proposal.getItemId().equals(itemId) || proposal.getItemId().equals(proposalId))
+        if(proposal.getItemId().equals(itemId) || proposal.getId().equals(proposalId))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 
         if(proposal.getWriter().equals(dto.getWriter()) && proposal.getPassword().equals(dto.getPassword()))
