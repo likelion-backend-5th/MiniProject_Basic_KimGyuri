@@ -46,6 +46,8 @@ public class NegotiationController {
 
         if (result == true)
             responseBody.put("message", "제안이 수정되었습니다.");
+        if (result == false)
+            responseBody.put("message", "제안의 상태가 변경되었습니다.");
 
         return ResponseEntity.ok(responseBody);
     }

@@ -71,13 +71,25 @@ public class NegotiationService {
         if (optionalProposal.isEmpty())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 
+        Optional<SalesItemEntity> optionalSalesItem = salesItemRepository.findById(itemId);
+        if (optionalSalesItem.isEmpty())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+
         NegotiationEntity proposal = optionalProposal.get();
+        SalesItemEntity item = optionalSalesItem.get();
 
         //구매 제안자
         if(proposal.getItemId() == itemId && proposal.getWriter().equals(dto.getWriter()) && proposal.getPassword().equals(dto.getPassword())) {
             proposal.setSuggestedPrice(dto.getSuggestedPrice());
             negotiationRepository.save(proposal);
             return true;
+        }
+
+        //물품 등록자
+        else if(proposal.getItemId() == itemId && item.getWriter().equals(dto.getWriter()) && item.getPassword().equals(dto.getPassword())) {
+            proposal.setStatus(dto.getStatus());
+            negotiationRepository.save(proposal);
+            return false;
         }
 
         else {
