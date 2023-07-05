@@ -121,9 +121,13 @@ public class NegotiationService {
 
         //물품 등록자 (제안 수락/거절)
         else if(proposal.getItemId().equals(itemId) && item.getWriter().equals(dto.getWriter()) && item.getPassword().equals(dto.getPassword())) {
-            proposal.setStatus(dto.getStatus());
-            negotiationRepository.save(proposal);
-            return "modify";
+            if(proposal.getStatus().equals("제안")) {
+                proposal.setStatus(dto.getStatus());
+                negotiationRepository.save(proposal);
+                return "modify";
+            } else {
+                throw new CheckStatusException();
+            }
         }
 
         else {
