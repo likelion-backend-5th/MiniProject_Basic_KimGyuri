@@ -5,10 +5,7 @@ import com.example.MutsaMarket.dto.ProposalListDto;
 import com.example.MutsaMarket.dto.UpdateProposalDto;
 import com.example.MutsaMarket.entity.NegotiationEntity;
 import com.example.MutsaMarket.entity.SalesItemEntity;
-import com.example.MutsaMarket.exceptions.AuthorizationException;
-import com.example.MutsaMarket.exceptions.CheckStatusException;
-import com.example.MutsaMarket.exceptions.ItemNotFoundException;
-import com.example.MutsaMarket.exceptions.NegotiationNotFoundException;
+import com.example.MutsaMarket.exceptions.*;
 import com.example.MutsaMarket.repository.NegotiationRepository;
 import com.example.MutsaMarket.repository.SalesItemRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +33,9 @@ public class NegotiationService {
         if(optionalSalesItem.isEmpty()) {
             throw new ItemNotFoundException();
         }
+        SalesItemEntity item = optionalSalesItem.get();
+        if(item.getStatus().equals("판매 완료"))
+            throw new SoldOutException();
 
         NegotiationEntity newProposal = new NegotiationEntity();
         newProposal.setWriter(dto.getWriter());
